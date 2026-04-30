@@ -1,3 +1,5 @@
+
+name: CI
       - name: Create Release
         if: github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v1
@@ -11,7 +13,6 @@
           files: |
             build/LuminaV-dev-*.dll
             build/LuminaV.pdb
-name: CI
 
 
 on:
