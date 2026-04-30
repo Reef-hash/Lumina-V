@@ -61,7 +61,7 @@ namespace big
 
 			*script_local(stack, idx).as<int*>()       = 1;
 			*script_local(stack, idx).at(1).as<int*>() = 2; // stage
-			// *script_local(stack, idx).at(1).at(6).as<int*>() = net_component->get_participant_index(player->get_net_game_player()); // beast participant idx
+			*script_local(stack, idx).at(1).at(6).as<int*>() = net_component->get_participant_index(player->get_net_game_player()); // beast participant idx
 			*script_local(stack, idx).at(1).at(7).as<Player*>()     = id;      // beast player idx
 			*script_local(stack, idx).at(1).at(2).as<int*>()        = INT_MAX; // stopwatch time
 			*script_local(stack, idx).at(1).at(2).at(1).as<bool*>() = true;    // stopwatch initialized

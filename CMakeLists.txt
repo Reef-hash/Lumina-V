@@ -54,12 +54,13 @@ set_property(TARGET LuminaV PROPERTY CXX_STANDARD 23) # 23 Because std::format i
 source_group(TREE ${SRC_DIR} PREFIX "src" FILES ${SRC_MAIN} )
 
 target_include_directories(LuminaV PRIVATE 
-    "${SRC_DIR}"
-    "${json_SOURCE_DIR}/single_include"
-    "${gtav_classes_SOURCE_DIR}"
-    "${imgui_SOURCE_DIR}"
-    "${minhook_SOURCE_DIR}/src/hde"
-    "${asmjit_SOURCE_DIR}/src"
+  "${SRC_DIR}"
+  "${json_SOURCE_DIR}/single_include"
+  "${gtav_classes_SOURCE_DIR}"
+  "${gtav_classes_SOURCE_DIR}/script"
+  "${imgui_SOURCE_DIR}"
+  "${minhook_SOURCE_DIR}/src/hde"
+  "${asmjit_SOURCE_DIR}/src"
 )
 
 target_precompile_headers(LuminaV PRIVATE "${SRC_DIR}/common.hpp")
