@@ -35,7 +35,6 @@ namespace big
 		static void mobile();
 		static void navigation();
 		static void notifications();
-		static void overlay();
 		static void root();
 		static void self();
 		static void animations();

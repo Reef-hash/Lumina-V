@@ -43,7 +43,6 @@ namespace big
 		g_renderer.add_dx_callback(view::onboarding, eRenderPriority::ONBOARDING);
 		g_renderer.add_dx_callback(view::gta_data, eRenderPriority::GTA_DATA_CACHE);
 		g_renderer.add_dx_callback(view::cmd_executor, eRenderPriority::CMD_EXECUTOR);
-		g_renderer.add_dx_callback(view::overlay, eRenderPriority::INFO_OVERLAY);
 
 		g_renderer.add_dx_callback(view::vehicle_control, eRenderPriority::VEHICLE_CONTROL);
 		g_renderer.add_dx_callback(esp::draw, eRenderPriority::ESP); // TODO: move to ESP service

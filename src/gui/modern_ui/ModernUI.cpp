@@ -1,7 +1,10 @@
+#include "views/view.hpp"
+#include "fonts/fonts.hpp" // Pastikan macro ikon seperti ICON_FA_USER tersedia
 // ModernUI.cpp - Adapted from Lumina (Enhanced) Modern Theme for use in Lumina V (YimMenu Legacy)
 #include <imgui.h>
 #include <cmath>
 #include <chrono>
+#include "views/view.hpp" // Assuming this includes necessary view definitions and utilities
 
 namespace modern_ui
 {
@@ -53,12 +56,12 @@ namespace modern_ui
 		{
 			ImGui::End();
 			ImGui::PopStyleColor();
+			ImGui::PopStyleColor();
 			ImGui::PopStyleVar(3);
 			return;
 		}
 
 		ImGui::PopStyleColor();
-		ImGui::PopStyleVar(3);
 
 		ImDrawList* dl = ImGui::GetWindowDrawList();
 		ImVec2 wPos  = ImGui::GetWindowPos();
@@ -66,6 +69,81 @@ namespace modern_ui
 
 		// Animated gradient bar (4px, full width)
 		DrawGradientBar(dl, wPos, ImVec2(wSize.x, 4.0f));
+
+		// Tab bar utama dengan ikon (pastikan font ikon sudah dimuatkan)
+		if (ImGui::BeginTabBar("MainTabs")) {
+			if (ImGui::BeginTabItem(ICON_FA_USER " Self")) {
+				big::view::self();
+				ImGui::EndTabItem();
+			}
+			if (ImGui::BeginTabItem(ICON_FA_USERS " Players")) {
+				big::view::players();
+				ImGui::EndTabItem();
+			}
+			if (ImGui::BeginTabItem(ICON_FA_CAR " Vehicle")) {
+				big::view::vehicle();
+				ImGui::EndTabItem();
+			}
+			if (ImGui::BeginTabItem(ICON_FA_GLOBE " World")) {
+				big::view::world();
+				ImGui::EndTabItem();
+			}
+			if (ImGui::BeginTabItem(ICON_FA_COG " Settings")) {
+				big::view::settings();
+				ImGui::EndTabItem();
+			}
+			if (ImGui::BeginTabItem(ICON_FA_SHIELD_ALT " Protections")) {
+				big::view::protection_settings();
+				ImGui::EndTabItem();
+			}
+			if (ImGui::BeginTabItem(ICON_FA_BOLT " Fun Vehicle")) {
+				big::view::fun_vehicle();
+				ImGui::EndTabItem();
+			}
+			if (ImGui::BeginTabItem(ICON_FA_GUN " Weapons")) {
+				big::view::weapons();
+				ImGui::EndTabItem();
+			}
+			if (ImGui::BeginTabItem(ICON_FA_NETWORK_WIRED " Network")) {
+				big::view::network();
+				ImGui::EndTabItem();
+			}
+			// Tambah tab lain ikut keperluan projek anda
+			ImGui::EndTabBar();
+		}
+
+		ImGui::End();
+		if (!ImGui::Begin("##LuminaMain", nullptr, wflags))
+		{
+			ImGui::End();
+			ImGui::PopStyleColor();
+			ImGui::PopStyleVar(3);
+			return;
+		}
+		//call all tabs from views here
+		if (ImGui::BeginTabBar("MainTabs")) {
+    		if (ImGui::BeginTabItem("Self")) {
+        	big::view::self();
+        	ImGui::EndTabItem();
+    }
+    		if (ImGui::BeginTabItem("Players")) {
+        	big::view::players();
+        	ImGui::EndTabItem();
+    }
+    		if (ImGui::BeginTabItem("Vehicle")) {
+        	big::view::vehicle();
+        	ImGui::EndTabItem();
+    }
+    		if (ImGui::BeginTabItem("World")) {
+        	big::view::world();
+        	ImGui::EndTabItem();
+    }
+    		if (ImGui::BeginTabItem("Settings")) {
+        	big::view::settings();
+        	ImGui::EndTabItem();
+    }
+    	// Tambah tab lain ikut keperluan
+    		ImGui::EndTabBar();
 
 		// ... (continue with header, sidebar, and content area as in original Modern.cpp)
 	}
