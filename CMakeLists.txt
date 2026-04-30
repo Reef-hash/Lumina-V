@@ -70,9 +70,10 @@ target_link_libraries(LuminaV PRIVATE pugixml minhook AsyncLogger dbghelp imgui 
 set_property(TARGET LuminaV PROPERTY COMPILE_WARNING_AS_ERROR ON)
 
 add_compile_definitions(LuminaV 
-    "_CRT_SECURE_NO_WARNINGS"
-    "NOMINMAX"
-    "WIN32_LEAN_AND_MEAN"
+  "_CRT_SECURE_NO_WARNINGS"
+  "NOMINMAX"
+  "WIN32_LEAN_AND_MEAN"
+  "YimMenu"
 )
 
 # Optimizations
