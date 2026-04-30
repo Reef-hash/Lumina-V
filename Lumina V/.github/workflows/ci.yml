@@ -13,7 +13,11 @@
             build/LuminaV.pdb
 name: CI
 
+
 on:
+  push:
+    branches:
+      - main
   pull_request:
     paths:
       - src/**
