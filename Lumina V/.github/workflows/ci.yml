@@ -1,0 +1,71 @@
+      - name: Create Release
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v1
+        with:
+          name: CI Release ${{ github.sha }}
+          tag_name: ci-${{ github.sha }}
+          body: |
+            **Automated CI Release**
+            Commit: ${{ github.sha }}
+            Built by GitHub Actions CI workflow.
+          files: |
+            build/LuminaV-dev-*.dll
+            build/LuminaV.pdb
+name: CI
+
+on:
+  pull_request:
+    paths:
+      - src/**
+      - cmake/**
+      - CMakeLists.txt
+      - .github/workflows/ci.yml
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    runs-on: windows-latest
+    name: CI
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check CMake version
+        run: cmake --version
+
+      - name: Setup MSVC environment
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: amd64
+
+      - name: Generate CMake project
+        run: cmake -D CMAKE_BUILD_TYPE=RelWithDebInfo -D OPTIMIZE=YES -S. -Bbuild -G Ninja
+
+      - name: Build 64bit release DLL
+        run: cmake --build ./build --config RelWithDebInfo --target LuminaV --
+
+      - name: Check if DLL got built
+        run: if (-Not (Test-Path -path "build/LuminaV.dll")) {throw 1}
+
+      - name: Rename DLL to LuminaV-dev-{GITHUB_SHA}.dll
+        run: |
+          del LuminaV-dev-*.dll
+          del LuminaV-dev-*.pdb
+          ren LuminaV.dll LuminaV-dev-${{github.sha}}.dll
+          ren LuminaV.pdb LuminaV.pdb
+        working-directory: build/
+
+      - name: Upload Artifact (dll)
+        uses: actions/upload-artifact@v4
+        with:
+          name: binary
+          path: |
+            build/LuminaV-dev-*.dll
+      - name: Upload Artifact (pdb)
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdb
+          path: |
+            build/LuminaV.pdb
