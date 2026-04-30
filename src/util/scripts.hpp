@@ -117,14 +117,14 @@ namespace big::scripts
 
 			for (auto& [_, plyr] : g_player_service->players())
 			{
-				if (((CGameScriptHandlerNetComponent*)launcher->m_net_component)->is_player_a_participant(plyr->get_net_game_player()))
-				{
-					if (*script_local(launcher->m_stack, 243).at(plyr->id(), 3).at(2).as<int*>() == state)
-					{
-						set = true;
-						break;
-					}
-				}
+				   // if (((CGameScriptHandlerNetComponent*)launcher->m_net_component)->is_player_a_participant(plyr->get_net_game_player()))
+				   // {
+				   //     if (*script_local(launcher->m_stack, 243).at(plyr->id(), 3).at(2).as<int*>() == state)
+				   //     {
+				   //         set = true;
+				   //         break;
+				   //     }
+				   // }
 			}
 
 			return set;
