@@ -20,6 +20,10 @@ namespace big
 	{
 		m_translation_directory = std::make_unique<folder>(g_file_manager.get_project_folder("./translations").get_path());
 
+		// Always seed m_translations with built-in English labels so the UI
+		// shows readable text even when the remote/cached JSON fails to load.
+		load_builtin_english_fallback();
+
 		bool loaded_remote_index = false;
 		for (size_t i = 0; i < 5 && !loaded_remote_index; i++)
 		{
@@ -78,7 +82,121 @@ namespace big
 		if (auto it = m_translations.find(translation_key); it != m_translations.end())
 			return it->second.c_str();
 
+		// Log unmapped keys so developers can add them to the translation pack.
+		if (fallback.data() && fallback.length())
+			LOG(VERBOSE) << "[i18n] No translation mapped for key: " << fallback;
+
 		return fallback;
+	}
+
+	void translation_service::load_builtin_english_fallback()
+	{
+		// Compile-time embedded English labels. These act as a last-resort
+		// fallback so the UI always displays readable text even without a
+		// downloaded language pack.
+		static const std::initializer_list<std::pair<const char*, const char*>> k_english = {
+			// Overlay
+			{"VIEW_OVERLAY_FPS",                      "FPS"},
+			{"PLAYERS",                               "Players"},
+			{"VIEW_OVERLAY_PLAYER_GODMODE",            "Player Godmode"},
+			{"OFF_THE_RADAR",                          "Off the Radar"},
+			{"VIEW_OVERLAY_VEHICLE_GODMODE",           "Vehicle Godmode"},
+			{"NEVER_WANTED",                           "Never Wanted"},
+			{"VIEW_OVERLAY_INFINITE_AMMO",             "Infinite Ammo"},
+			{"VIEW_OVERLAY_ALWAYS_FULL_AMMO",          "Always Full Ammo"},
+			{"VIEW_OVERLAY_INFINITE_MAGAZINE",         "Infinite Magazine"},
+			{"VIEW_OVERLAY_AIMBOT",                    "Aimbot"},
+			{"VIEW_OVERLAY_TRIGGERBOT",                "Triggerbot"},
+			{"INVISIBILITY",                           "Invisibility"},
+			{"VIEW_OVERLAY_POSITION",                  "Position"},
+			{"VIEW_OVERLAY_PED_POOL",                  "Ped Pool"},
+			{"VIEW_OVERLAY_VEHICLE_POOL",              "Vehicle Pool"},
+			{"VIEW_OVERLAY_OBJECT_POOL",               "Object Pool"},
+			{"VIEW_OVERLAY_GAME_VERSION",              "Game Version"},
+			{"VIEW_OVERLAY_ONLINE_VERSION",            "Online Version"},
+			// Tabs / sections
+			{"GUI_TAB_SELF",                           "Self"},
+			{"GUI_TAB_WEAPONS",                        "Weapons"},
+			{"GUI_TAB_SETTINGS",                       "Settings"},
+			{"GUI_TAB_NETWORK",                        "Network"},
+			{"GUI_TAB_MOBILE",                         "Mobile"},
+			{"GUI_TAB_CREATOR",                        "Creator"},
+			{"GUI_TAB_MISSIONS",                       "Missions"},
+			{"GUI_TAB_TELEPORT",                       "Teleport"},
+			{"GUI_TAB_CUSTOM_TELEPORT",                "Custom Teleport"},
+			{"GUI_TAB_GRAVITY",                        "Gravity"},
+			{"GUI_TAB_OCEAN",                          "Ocean"},
+			{"GUI_TAB_TIME_N_WEATHER",                 "Time & Weather"},
+			{"GUI_TAB_WAYPOINT_N_OBJECTIVE",           "Waypoint & Objective"},
+			{"GUI_TAB_ANIMATIONS",                     "Animations"},
+			{"GUI_TAB_IPL",                            "IPL"},
+			{"GUI_TAB_LSC",                            "Los Santos Customs"},
+			{"GUI_TAB_PLAYER_DATABASE",                "Player Database"},
+			{"GUI_TAB_SQUAD_SPAWNER",                  "Squad Spawner"},
+			{"GUI_TAB_MODEL_SWAPPER",                  "Model Swapper"},
+			{"GUI_TAB_SPAWN_VEHICLE",                  "Spawn Vehicle"},
+			{"GUI_TAB_SPAWN_VEHICLE_META",             "Spawn Vehicle"},
+			// Common actions
+			{"BACK",                                   "Back"},
+			{"CANCEL",                                 "Cancel"},
+			{"CLOSE",                                  "Close"},
+			{"DELETE",                                 "Delete"},
+			{"DISABLE",                                "Disable"},
+			{"ENABLE",                                 "Enable"},
+			{"FORCE",                                  "Force"},
+			{"HIDE",                                   "Hide"},
+			{"JOIN",                                   "Join"},
+			{"LOG",                                    "Log"},
+			{"MAX",                                    "Max"},
+			{"MIN",                                    "Min"},
+			{"MOD",                                    "Mod"},
+			{"NOTIFY",                                 "Notify"},
+			{"OFF",                                    "Off"},
+			{"OPEN",                                   "Open"},
+			{"REFRESH",                                "Refresh"},
+			{"TELEPORT",                               "Teleport"},
+			{"VEHICLE",                                "Vehicle"},
+			// World
+			{"GUI_TAB_SPAWN_VEHICLE",                  "Spawn Vehicle"},
+			{"PED",                                    "Ped"},
+			{"VEHICLES",                               "Vehicles"},
+			{"VIEW_WORLD_AUTO_DISARM",                 "Auto Disarm"},
+			{"VIEW_WORLD_NEUTRALIZE",                  "Neutralize"},
+			{"VIEW_WORLD_KILL_ENEMIES",                "Kill Enemies"},
+			{"VIEW_WORLD_DOWNGRADE",                   "Downgrade Vehicles"},
+			{"VIEW_WORLD_PROPS",                       "Props"},
+			{"VIEW_WORLD_SELF_VEHICLE",                "Personal Vehicle"},
+			{"VIEW_WORLD_INCLUDE",                     "Include"},
+			{"VIEW_WORLD_DELETE_ALL",                  "Delete All"},
+			{"VIEW_BLACKHOLE_ENTITIES",                "Blackhole Entities"},
+			{"MAX_VEHICLE",                            "Max All Vehicles"},
+			{"FORCE",                                  "Force"},
+			// Protections / reactions
+			{"PROTECTIONS",                            "Protections"},
+			// Debug
+			{"VIEW_DEBUG_THREADS_KILL",                "Kill Threads"},
+			{"VIEW_DEBUG_ANIMATIONS_STOP",             "Stop Animation"},
+			// Misc
+			{"BACKEND_COMMAND",                        "Command"},
+			{"EMPTY_SESSION",                          "Empty Session"},
+			{"BACKEND_WIPE_SESSION_COMPLETE",          "Session wipe complete"},
+			{"TRANSITION_STATE_EMPTY",                 "Empty"},
+			{"GOD_MODE",                               "God Mode"},
+			{"HEAL",                                   "Heal"},
+			{"KILL_ALL",                               "Kill All"},
+			{"LANGUAGE",                               "Language"},
+			{"SETTINGS_MISC",                          "Miscellaneous"},
+			{"HEADING_WELCOME",                        "Welcome to Lumina V"},
+		};
+
+		for (const auto& [key, label] : k_english)
+		{
+			const auto hash = rage::joaat(key);
+			// Only insert if not already present (external pack takes priority)
+			m_translations.emplace(hash, label);
+		}
+
+		LOG(INFO) << "[i18n] Loaded built-in English fallback (" << k_english.size() << " entries)";
 	}
 
 	std::map<std::string, translation_entry>& translation_service::available_translations()
@@ -141,6 +259,10 @@ namespace big
 				m_translations[rage::joaat(key)] = value;
 			}
 		}
+
+		// Re-apply built-in English fallback for any keys not covered by the
+		// downloaded pack. Uses emplace so external keys are not overwritten.
+		load_builtin_english_fallback();
 
 		// local index is saved below so this is prime location to update a value and be sure to have it persisted!
 		m_local_index.alphabet_type = m_remote_index.translations[m_local_index.selected_language].alphabet_type;

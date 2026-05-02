@@ -37,6 +37,7 @@ namespace big
 
 	private:
 		void load_translations();
+		void load_builtin_english_fallback();
 		bool does_language_exist(const std::string_view language);
 		nlohmann::json load_translation(const std::string_view pack_id);
 
