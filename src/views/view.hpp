@@ -83,6 +83,8 @@ namespace big
 
 		static void cmd_executor();
 
+		static void overlay();
+
 		static void player_info();
 		static void player_teleport();
 		static void player_kick();
