@@ -50,7 +50,7 @@ namespace modern_ui
                         ImGuiWindowFlags_NoScrollbar |
                         ImGuiWindowFlags_NoScrollWithMouse;
 
-                // PopStyleColor is called immediately after Begin regardless of outcome
+                // PopStyleColor must always be called once after Begin
                 bool window_open = ImGui::Begin("##LuminaMain", nullptr, wflags);
                 ImGui::PopStyleColor();
 
@@ -65,63 +65,61 @@ namespace modern_ui
                 ImVec2 wPos    = ImGui::GetWindowPos();
                 ImVec2 wSize   = ImGui::GetWindowSize();
 
-                // Debug: log active element count once per 300 frames
+                // Debug: log window dimensions once per 300 frames
                 static int s_frame_counter = 0;
                 if (++s_frame_counter >= 300)
                 {
                         s_frame_counter = 0;
-                        LOG(VERBOSE) << "[UI] ModernUI rendering — window size: "
-                                     << wSize.x << "x" << wSize.y
-                                     << " | active elements: " << ImGui::GetCurrentWindow()->DC.ItemWidth;
+                        LOG(VERBOSE) << "[UI] ModernUI window: " << wSize.x << "x" << wSize.y;
                 }
 
                 // Animated gradient bar (4 px, full width)
                 DrawGradientBar(dl, wPos, ImVec2(wSize.x, 4.0f));
 
-                // Single tab bar with human-readable labels
+                // Single tab bar with readable labels
                 if (ImGui::BeginTabBar("##LuminaMainTabs"))
                 {
-                        if (ImGui::BeginTabItem(ICON_FA_USER " Self"))
+                        if (ImGui::BeginTabItem("Self"))
                         {
                                 big::view::self();
                                 ImGui::EndTabItem();
                         }
-                        if (ImGui::BeginTabItem(ICON_FA_USERS " Players"))
+                        if (ImGui::BeginTabItem("Players"))
                         {
                                 big::view::players();
                                 ImGui::EndTabItem();
                         }
-                        if (ImGui::BeginTabItem(ICON_FA_CAR " Vehicle"))
+                        if (ImGui::BeginTabItem("Vehicle"))
                         {
                                 big::view::vehicle();
                                 ImGui::EndTabItem();
                         }
-                        if (ImGui::BeginTabItem(ICON_FA_GLOBE " World"))
+                        if (ImGui::BeginTabItem("World"))
                         {
                                 big::view::world();
                                 ImGui::EndTabItem();
                         }
-                        if (ImGui::BeginTabItem(ICON_FA_COG " Settings"))
+                        if (ImGui::BeginTabItem("Settings"))
                         {
                                 big::view::settings();
                                 ImGui::EndTabItem();
                         }
-                        if (ImGui::BeginTabItem(ICON_FA_SHIELD_ALT " Protections"))
+                        if (ImGui::BeginTabItem("Protections"))
                         {
                                 big::view::protection_settings();
                                 ImGui::EndTabItem();
                         }
-                        if (ImGui::BeginTabItem(ICON_FA_BOLT " Fun Vehicle"))
+                        if (ImGui::BeginTabItem("Fun Vehicle"))
                         {
                                 big::view::fun_vehicle();
                                 ImGui::EndTabItem();
                         }
-                        if (ImGui::BeginTabItem(ICON_FA_GUN " Weapons"))
+                        if (ImGui::BeginTabItem("Weapons"))
                         {
                                 big::view::weapons();
                                 ImGui::EndTabItem();
                         }
-                        if (ImGui::BeginTabItem(ICON_FA_NETWORK_WIRED " Network"))
+                        if (ImGui::BeginTabItem("Network"))
                         {
                                 big::view::network();
                                 ImGui::EndTabItem();
