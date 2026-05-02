@@ -1,19 +1,4 @@
-
-name: CI
-      - name: Create Release
-        if: github.ref == 'refs/heads/main'
-        uses: softprops/action-gh-release@v1
-        with:
-          name: CI Release ${{ github.sha }}
-          tag_name: ci-${{ github.sha }}
-          body: |
-            **Automated CI Release**
-            Commit: ${{ github.sha }}
-            Built by GitHub Actions CI workflow.
-          files: |
-            build/LuminaV-dev-*.dll
-            build/LuminaV.pdb
-
+﻿name: CI
 
 on:
   push:
@@ -34,6 +19,9 @@ jobs:
   ci:
     runs-on: windows-latest
     name: CI
+    permissions:
+      contents: write
+
     steps:
       - uses: actions/checkout@v4
 
@@ -52,25 +40,38 @@ jobs:
         run: cmake --build ./build --config RelWithDebInfo --target LuminaV --
 
       - name: Check if DLL got built
-        run: if (-Not (Test-Path -path "build/LuminaV.dll")) {throw 1}
+        run: if (-Not (Test-Path -path "build/LuminaV.dll")) { throw "DLL not found" }
 
-      - name: Rename DLL to LuminaV-dev-{GITHUB_SHA}.dll
+      - name: Rename DLL with commit SHA
         run: |
-          del LuminaV-dev-*.dll
-          del LuminaV-dev-*.pdb
-          ren LuminaV.dll LuminaV-dev-${{github.sha}}.dll
-          ren LuminaV.pdb LuminaV.pdb
+          Rename-Item -Path "LuminaV.dll" -NewName "LuminaV-dev-${{ github.sha }}.dll"
         working-directory: build/
 
-      - name: Upload Artifact (dll)
+      - name: Upload DLL artifact
         uses: actions/upload-artifact@v4
         with:
-          name: binary
-          path: |
-            build/LuminaV-dev-*.dll
-      - name: Upload Artifact (pdb)
+          name: LuminaV-dev-${{ github.sha }}
+          path: build/LuminaV-dev-${{ github.sha }}.dll
+
+      - name: Upload PDB artifact
         uses: actions/upload-artifact@v4
         with:
-          name: pdb
-          path: |
+          name: LuminaV-pdb-${{ github.sha }}
+          path: build/LuminaV.pdb
+
+      - name: Create GitHub Release
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Dev Build ${{ github.sha }}"
+          tag_name: "ci-${{ github.sha }}"
+          body: |
+            **Automated Dev Build**
+            Branch: `main`
+            Commit: `${{ github.sha }}`
+
+            Inject `LuminaV-dev-${{ github.sha }}.dll` into GTA V.
+          files: |
+            build/LuminaV-dev-${{ github.sha }}.dll
             build/LuminaV.pdb
+          prerelease: true
