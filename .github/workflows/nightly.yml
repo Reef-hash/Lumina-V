@@ -72,8 +72,10 @@ jobs:
   recreate_release:
     runs-on: ubuntu-latest
     name: Recreate Release
-    needs: build_nightly
+    needs: [build_nightly, check_recent_commit]
     if: needs.check_recent_commit.outputs.should_run == 'true'
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -131,7 +133,7 @@ jobs:
           cat sha256.checksum
 
       - name: Nightly Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           name: Nightly [${{ needs.build_nightly.outputs.short_sha }}]
           tag_name: nightly
